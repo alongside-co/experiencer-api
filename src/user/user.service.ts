@@ -1,46 +1,38 @@
-import { CreateUserDto } from './dto/create-user.dto';
 import { Injectable } from '@nestjs/common';
-import { User } from './interfaces/user.interface';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+
+import { CreateUserDto } from './dto/create-user.dto';
+import { User, UserDocument } from './schemas/user.schema';
 
 @Injectable()
 export class UserService {
-  private readonly users: User[] = [
-    {
-      id: 1,
-      email: {
-        kakao: 'email@address.com',
-      },
-      username: 'sungjin',
-      password: 'password',
-    },
-  ];
+  constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
 
-  create({ type, email, username, password }: CreateUserDto) {
+  async create({
+    type,
+    socialId,
+    username,
+  }: CreateUserDto): Promise<UserDocument> {
     const newUser = {
-      id: this.users.length,
-      email: {
-        [type]: email,
+      socialIds: {
+        [type]: socialId,
       },
       username,
-      password,
     };
 
-    this.users.push(newUser);
-
-    return newUser;
+    const createdUser = new this.userModel(newUser);
+    return createdUser.save();
   }
 
-  async findOne(name: string): Promise<User | undefined> {
-    return this.users.find((user) => user.username === name);
-  }
-
-  async findByEmail({
+  async findBySocialId({
     type,
-    email,
+    id,
   }: {
     type: 'kakao' | 'naver';
-    email: string;
-  }): Promise<User | undefined> {
-    return this.users.find((user) => user.email[type] === email);
+    id: string;
+  }): Promise<UserDocument | undefined> {
+    const key = `socialIds.${type}`;
+    return this.userModel.findOne({ [key]: id });
   }
 }
