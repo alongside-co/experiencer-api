@@ -1,3 +1,4 @@
+import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
@@ -17,6 +18,7 @@ import { SocialStrategy } from './social.strategy';
       secret: jwtConstants.secret,
       signOptions: { expiresIn: '60s' },
     }),
+    HttpModule,
   ],
   providers: [AuthService, LocalStrategy, JwtStrategy, SocialStrategy],
   controllers: [AuthController],
