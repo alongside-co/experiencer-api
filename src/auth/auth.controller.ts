@@ -1,15 +1,13 @@
-import { HttpService } from '@nestjs/axios';
-import { AuthService } from './auth.service';
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Post, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 
+import { AuthService } from './auth.service';
 import { UserService } from 'src/user/user.service';
 import { AuthDto } from './dto/auth.dto';
 
 @Controller('auth')
 export class AuthController {
   constructor(
-    private readonly httpService: HttpService,
     private readonly authService: AuthService,
     private readonly userService: UserService,
     private readonly jwtService: JwtService,
@@ -21,15 +19,14 @@ export class AuthController {
 
     try {
       profile = await this.authService.getSocialProfile(data);
+      if (!profile) {
+        throw new UnauthorizedException();
+      }
     } catch (e: any) {
       return { success: false, message: e.message };
     }
 
     try {
-      if (!profile) {
-        return { success: false, message: 'login fail' };
-      }
-
       let user = await this.userService.findBySocialId({
         type: data.channel,
         id: profile.id,
@@ -39,7 +36,7 @@ export class AuthController {
         user = await this.userService.create({
           type: data.channel,
           socialId: profile.id,
-          username: profile.profile.nickname,
+          username: profile.kakao_account.profile.nickname,
         });
       }
 

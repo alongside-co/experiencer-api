@@ -7,7 +7,6 @@ import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { jwtConstants } from './constants';
 import { JwtStrategy } from './jwt.strategy';
-import { LocalStrategy } from './local.strategy';
 import { SocialStrategy } from './social.strategy';
 
 @Module({
@@ -20,7 +19,7 @@ import { SocialStrategy } from './social.strategy';
     }),
     HttpModule,
   ],
-  providers: [AuthService, LocalStrategy, JwtStrategy, SocialStrategy],
+  providers: [AuthService, JwtStrategy, SocialStrategy],
   controllers: [AuthController],
   exports: [AuthService],
 })
