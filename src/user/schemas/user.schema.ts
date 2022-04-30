@@ -11,7 +11,7 @@ export class User {
       naver: { type: String },
     }),
   )
-  email: {
+  socialIds: {
     kakao?: string;
     naver?: string;
   };

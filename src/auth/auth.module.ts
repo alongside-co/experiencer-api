@@ -7,7 +7,6 @@ import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { jwtConstants } from './constants';
 import { JwtStrategy } from './jwt.strategy';
-import { SocialStrategy } from './social.strategy';
 
 @Module({
   imports: [
@@ -15,11 +14,10 @@ import { SocialStrategy } from './social.strategy';
     PassportModule,
     JwtModule.register({
       secret: jwtConstants.secret,
-      signOptions: { expiresIn: '60s' },
     }),
     HttpModule,
   ],
-  providers: [AuthService, JwtStrategy, SocialStrategy],
+  providers: [AuthService, JwtStrategy],
   controllers: [AuthController],
   exports: [AuthService],
 })

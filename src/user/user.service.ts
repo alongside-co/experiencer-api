@@ -1,38 +1,38 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-
+import { Model, Types } from 'mongoose';
 import { CreateUserDto } from './dto/create-user.dto';
+
 import { User, UserDocument } from './schemas/user.schema';
 
 @Injectable()
 export class UserService {
   constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
 
-  async create({
-    type,
-    socialId,
-    username,
-  }: CreateUserDto): Promise<UserDocument> {
+  async create(createUserDto: CreateUserDto): Promise<UserDocument> {
     const newUser = {
       socialIds: {
-        [type]: socialId,
+        [createUserDto.channel]: createUserDto.socialId,
       },
-      username,
+      username: createUserDto.username,
     };
-
     const createdUser = new this.userModel(newUser);
+
     return createdUser.save();
   }
 
   async findBySocialId({
-    type,
+    channel,
     id,
   }: {
-    type: 'kakao' | 'naver';
+    channel: 'kakao' | 'naver';
     id: string;
   }): Promise<UserDocument | undefined> {
-    const key = `socialIds.${type}`;
+    const key = `socialIds.${channel}`;
     return this.userModel.findOne({ [key]: id });
+  }
+
+  async findById(id: Types.ObjectId) {
+    return await this.userModel.findById(id);
   }
 }
