@@ -2,11 +2,19 @@ import { IsEnum, IsString } from 'class-validator';
 
 export class CreateUserDto {
   @IsEnum(['kakao', 'naver'])
-  readonly channel: 'kakao' | 'naver';
+  channel: 'kakao' | 'naver';
 
   @IsString()
-  readonly socialId: string;
+  socialId: string;
 
   @IsString()
-  readonly username: string;
+  username: string;
+
+  static from(data: CreateUserDto) {
+    const createUserDto = new CreateUserDto();
+    createUserDto.channel = data.channel;
+    createUserDto.socialId = data.socialId;
+    createUserDto.username = data.username;
+    return createUserDto;
+  }
 }

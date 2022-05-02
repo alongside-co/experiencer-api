@@ -4,6 +4,7 @@ import { JwtService } from '@nestjs/jwt';
 import { AuthService } from './auth.service';
 import { UserService } from 'src/user/user.service';
 import { AuthDto } from './dto/auth.dto';
+import { CreateUserDto } from 'src/user/dto/create-user.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -28,13 +29,13 @@ export class AuthController {
         id: profile.id,
       });
 
-      console.log(profile.kakao_account.profile);
       if (!user) {
-        user = await this.userService.create({
+        const userDto = CreateUserDto.from({
           channel,
           socialId: profile.id,
           username: profile.kakao_account.profile.nickname,
         });
+        user = await this.userService.create(userDto);
       }
 
       const accessToken = this.jwtService.sign({ id: user._id });
