@@ -3,14 +3,14 @@ import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { AppController } from './app.controller';
 import { MongooseModule } from '@nestjs/mongoose';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
+    ConfigModule.forRoot({ isGlobal: true }),
+    MongooseModule.forRoot(process.env.MONGO_DB),
     AuthModule,
     UserModule,
-    MongooseModule.forRoot(
-      'mongodb+srv://sungjin:vWkvxRsjNepZGR2k@cluster0.dihvd.mongodb.net/exper?retryWrites=true&w=majority',
-    ),
   ],
   controllers: [AppController],
   providers: [],
