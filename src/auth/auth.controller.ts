@@ -17,32 +17,32 @@ export class AuthController {
   @Post('sign-in')
   async signIn(@Body() authDto: AuthDto) {
     const { channel } = authDto;
-    try {
-      const profile = await this.authService.getSocialProfile(authDto);
+    // try {
+    const profile = await this.authService.getSocialProfile(authDto);
 
-      if (!profile) {
-        throw new UnauthorizedException();
-      }
-
-      let user = await this.userService.findBySocialId({
-        channel,
-        id: profile.id,
-      });
-
-      if (!user) {
-        const userDto = CreateUserDto.from({
-          channel,
-          socialId: profile.id,
-          username: profile.kakao_account.profile.nickname,
-        });
-        user = await this.userService.create(userDto);
-      }
-
-      const accessToken = this.jwtService.sign({ id: user._id });
-
-      return { success: true, data: accessToken };
-    } catch (e: any) {
-      return { success: false, message: e.message };
+    if (!profile) {
+      throw new UnauthorizedException();
     }
+
+    let user = await this.userService.findBySocialId({
+      channel,
+      id: profile.id,
+    });
+
+    if (!user) {
+      const userDto = CreateUserDto.from({
+        channel,
+        socialId: profile.id,
+        username: profile.kakao_account.profile.nickname,
+      });
+      user = await this.userService.create(userDto);
+    }
+
+    const accessToken = this.jwtService.sign({ id: user._id });
+
+    return { success: true, data: accessToken };
+    // } catch (e: any) {
+    //   return { success: false, message: e.message };
+    // }
   }
 }
