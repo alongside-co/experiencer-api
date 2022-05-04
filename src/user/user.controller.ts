@@ -1,21 +1,17 @@
-import { Controller, Get, Request, UseGuards } from '@nestjs/common';
+import { Controller, Get, UseGuards } from '@nestjs/common';
 
+import { GetUser } from 'src/auth/decorator';
 import { JwtAuthGuard } from '../auth/guard';
+import { UserDocument } from './schemas/user.schema';
 import { UserService } from './user.service';
 
+@UseGuards(JwtAuthGuard)
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  @UseGuards(JwtAuthGuard)
   @Get('me')
-  async getUser(@Request() req) {
-    const user = await this.userService.findById(req.user.id);
-
-    if (user) {
-      return { success: true, data: user };
-    } else {
-      return { success: false, message: 'no sign up' };
-    }
+  async getUser(@GetUser() user: UserDocument) {
+    return { data: user };
   }
 }

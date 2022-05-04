@@ -17,7 +17,6 @@ export class AuthController {
   @Post('sign-in')
   async signIn(@Body() authDto: AuthDto) {
     const { channel } = authDto;
-    // try {
     const profile = await this.authService.getSocialProfile(authDto);
 
     if (!profile) {
@@ -40,9 +39,6 @@ export class AuthController {
 
     const accessToken = this.jwtService.sign({ id: user._id });
 
-    return { success: true, data: accessToken };
-    // } catch (e: any) {
-    //   return { success: false, message: e.message };
-    // }
+    return { data: accessToken };
   }
 }
