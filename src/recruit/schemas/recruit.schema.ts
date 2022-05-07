@@ -1,5 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document, Types } from 'mongoose';
+import mongoose from 'mongoose';
+import { Document } from 'mongoose';
+
 import { User } from 'src/user/schemas/user.schema';
 
 @Schema({ timestamps: true })
@@ -13,10 +15,12 @@ export class Recruit {
   @Prop()
   description: string;
 
-  @Prop({ type: Types.ObjectId, ref: 'User' })
+  @Prop({ type: User })
   owner: User;
 
-  @Prop({ type: [{ type: Types.ObjectId, ref: 'User' }] })
+  @Prop({
+    type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+  })
   candidates: User[];
 }
 
