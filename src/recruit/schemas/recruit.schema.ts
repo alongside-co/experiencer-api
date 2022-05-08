@@ -15,7 +15,7 @@ export class Recruit {
   @Prop()
   description: string;
 
-  @Prop({ type: User })
+  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User' })
   owner: User;
 
   @Prop({

@@ -1,14 +1,21 @@
-import { UserDocument } from './../user/schemas/user.schema';
 import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
+import { InjectConnection } from '@nestjs/mongoose';
+import mongoose from 'mongoose';
 
+import { UserDocument } from './../user/schemas/user.schema';
 import { GetUser } from 'src/auth/decorator';
 import { JwtAuthGuard } from './../auth/guard/jwt-auth.guard';
 import { RecruitService } from './recruit.service';
 import { CreateRecruitDto } from './dto/create-recruit.dto';
+import { UserService } from 'src/user/user.service';
 
 @Controller('recruit')
 export class RecruitController {
-  constructor(private readonly recruitService: RecruitService) {}
+  constructor(
+    private readonly recruitService: RecruitService,
+    private readonly userService: UserService,
+    @InjectConnection() private readonly connection: mongoose.Connection,
+  ) {}
 
   @Get()
   getRecruits() {
@@ -21,10 +28,22 @@ export class RecruitController {
     @GetUser() user: UserDocument,
     @Body() createRecruitDto: CreateRecruitDto,
   ) {
-    const newRecruit = await this.recruitService.create(
-      createRecruitDto.toEntity(user),
-    );
+    const transactionSesstion = await this.connection.startSession();
+    transactionSesstion.startTransaction();
 
-    return { data: newRecruit };
+    try {
+      const newRecruit = await this.recruitService.create(
+        createRecruitDto.toEntity(user),
+      );
+      await this.userService.addNewRecruit(user, newRecruit);
+
+      transactionSesstion.commitTransaction();
+      return { data: newRecruit };
+    } catch (error) {
+      console.log('error: ', error);
+      transactionSesstion.abortTransaction();
+    } finally {
+      transactionSesstion.endSession();
+    }
   }
 }

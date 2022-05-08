@@ -1,5 +1,7 @@
 import { Prop, raw, Schema, SchemaFactory } from '@nestjs/mongoose';
+import mongoose from 'mongoose';
 import { Document } from 'mongoose';
+import { Recruit } from 'src/recruit/schemas/recruit.schema';
 
 @Schema()
 export class User {
@@ -16,6 +18,9 @@ export class User {
 
   @Prop()
   username: string;
+
+  @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Recruit' }] })
+  ownRecruits: Recruit[];
 }
 
 export type UserDocument = User & Document;

@@ -1,9 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
-import { CreateUserDto } from './dto/create-user.dto';
 
+import { RecruitDocument } from 'src/recruit/schemas/recruit.schema';
 import { User, UserDocument } from './schemas/user.schema';
+import { CreateUserDto } from './dto/create-user.dto';
 
 @Injectable()
 export class UserService {
@@ -34,5 +35,21 @@ export class UserService {
 
   async findById(id: Types.ObjectId) {
     return await this.userModel.findById(id);
+  }
+
+  async update({ _id, ...rest }: Partial<UserDocument>) {
+    return await this.userModel.findByIdAndUpdate(_id, rest, {
+      new: true,
+    });
+  }
+
+  async addNewRecruit(user: UserDocument, newRecruit: RecruitDocument) {
+    return await this.userModel.findByIdAndUpdate(
+      user._id,
+      {
+        $push: { ownRecruits: newRecruit._id },
+      },
+      { new: true },
+    );
   }
 }

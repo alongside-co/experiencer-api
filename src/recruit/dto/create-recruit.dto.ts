@@ -17,7 +17,7 @@ export class CreateRecruitDto {
       title: this.title,
       image: this.image,
       description: this.description,
-      owner: user,
+      owner: user._id,
       candidates: [],
     };
   }
