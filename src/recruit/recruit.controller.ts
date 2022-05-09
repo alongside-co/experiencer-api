@@ -18,8 +18,9 @@ export class RecruitController {
   ) {}
 
   @Get()
-  getRecruits() {
-    return { data: 'get all recruits ' };
+  async getRecruits() {
+    const recruits = await this.recruitService.getAll();
+    return { data: recruits };
   }
 
   @UseGuards(JwtAuthGuard)

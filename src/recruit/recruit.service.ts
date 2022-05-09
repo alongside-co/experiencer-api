@@ -11,6 +11,11 @@ export class RecruitService {
   ) {}
 
   async create(recruit: Recruit) {
-    return new this.recruitModel(recruit);
+    const newRecruit = new this.recruitModel(recruit);
+    return await newRecruit.save();
+  }
+
+  async getAll() {
+    return await this.recruitModel.find();
   }
 }
