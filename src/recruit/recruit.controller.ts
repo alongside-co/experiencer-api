@@ -1,4 +1,5 @@
-import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
+import { ObjectId } from 'mongodb';
+import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/mongoose';
 import mongoose from 'mongoose';
 
@@ -8,6 +9,7 @@ import { JwtAuthGuard } from './../auth/guard/jwt-auth.guard';
 import { RecruitService } from './recruit.service';
 import { CreateRecruitDto } from './dto/create-recruit.dto';
 import { UserService } from 'src/user/user.service';
+import { ValidateMongoId } from 'src/pipe/validateMongoId.pipe';
 
 @Controller('recruit')
 export class RecruitController {
@@ -21,6 +23,12 @@ export class RecruitController {
   async getRecruits() {
     const recruits = await this.recruitService.getAll();
     return { data: recruits };
+  }
+
+  @Get(':id')
+  async getRecruit(@Param('id', ValidateMongoId) id: ObjectId) {
+    const recruit = await this.recruitService.getById(id);
+    return { data: recruit };
   }
 
   @UseGuards(JwtAuthGuard)

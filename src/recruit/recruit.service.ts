@@ -1,3 +1,4 @@
+import { ObjectId } from 'mongodb';
 import { Model } from 'mongoose';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
@@ -17,5 +18,9 @@ export class RecruitService {
 
   async getAll() {
     return await this.recruitModel.find();
+  }
+
+  async getById(id: ObjectId) {
+    return await this.recruitModel.findById(id);
   }
 }
